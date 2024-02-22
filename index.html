@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   
+    <meta charset="utf-8">
+    <title>aarr server</title>
+    <meta name="description" content="荒らし連合のサーバー状況を確認します">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#a9ceec">
+    <meta property="og:url" content="https://hatchingchick.github.io/aarr">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="aarr status">
+    <meta property="og:description" content="荒らし連合のサーバー状況を確認します">
+    <meta property="og:site_name" content="AARR">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/741698370250342571/935814997219606568/aaaaaaaapop_tuna_gru.png">
+    <title>Discord Server Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://cdn.discordapp.com/attachments/1193381758742298808/1209784124030853160/MOSHED-2023-11-3-10-39-41.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+            width: 300px; /* Adjust as needed */
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        .success-message {
+            color: cyan;
+        }
+
+        /* SNSアイコンのスタイル */
+        #sns-icons {
+            margin-top: 20px;
+        }
+
+        #sns-icons a {
+            margin: 0 10px; /* Adjust spacing */
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        #sns-icons img {
+            width: 40px; /* Make icons smaller */
+            height: 40px; /* Make icons smaller */
+            border-radius: 50%; /* Make icons round */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>AARR Status</h1>
+        <p id="status-message"></p>
+        <iframe id="discord-widget" src="https://discord.com/widget?id=1193327216642244778&theme=dark" width="100%"
+            height="500" allowtransparency="true" frameborder="0"
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+
+        <!-- SNSアイコン -->
+        <div id="sns-icons">
+            <a href="https://discord.gg/DPmPdpcNqs" target="_blank">
+                <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png"
+                    alt="Discord">
+            </a>
+            <a href="https://www.youtube.com/channel/UCrgLm8A0L9OCYEt0rpiZlEw" target="_blank">
+                <img src="https://tamatuf.net/wp/wp-content/uploads/2020/08/icon-youtube.png"
+                    alt="YouTube">
+            </a>
+            <a href="https://github.com/hatchingchick" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+                    alt="GitHub">
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function checkServerStatus() {
+            fetch('https://discord.com/api/guilds/1206643669109841930/widget.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch server status');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // サーバーは正常に稼働しています
+                    updateStatusMessage('🟢サーバーは正常に動作しています', 'success-message');
+                })
+                .catch(error => {
+                    // サーバーがダウンしているか到達できない状態です
+                    updateStatusMessage('❌サーバーが削除されています。避難所に移動して下さいhttps://discord.gg/b7wbrHAkRU', 'error-message');
+                    // ウィジェットが無効な場合は代わりにサブウィジェットを表示
+                    document.getElementById('discord-widget').src = "https://ptb.discord.com/widget?id=1209794963257434133&theme=dark";
+                    // Discordのアイコンのリンクをサブリンクに切り替え
+                    document.querySelector('#sns-icons a[href="https://discord.gg/bpXzBbrDVD"]').href = "https://discord.gg/b7wbrHAkRU";
+                });
+        }
+
+        function updateStatusMessage(message, className) {
+            const statusMessageElement = document.getElementById('status-message');
+            statusMessageElement.textContent = message;
+            statusMessageElement.classList.add(className);
+        }
+
+        // ページの読み込み時にサーバーの状態を確認
+        checkServerStatus();
+
+        // 1分ごとにメインウィジェットの状況を再取得
+        setInterval(checkServerStatus, 60 * 1000);
+
+        // SNSアイコンをクリックしたときの挙動を設定
+        document.querySelectorAll('#sns-icons a').forEach(icon => {
+            icon.addEventListener('click', event => {
+                event.preventDefault(); // リンクのデフォルトの動作をキャンセル
+                const url = icon.getAttribute('href'); // アイコンのリンク先URLを取得
+                window.open(url, '_blank'); // 新しいタブでURLを開く
+            });
+        });
+    </script>
+</body>
+
+</html>
